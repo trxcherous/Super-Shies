@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipments</title>
+    <link rel="stylesheet" type="text/css" href="eq_style.css">
+    <style>
+        /* Hide up and down arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="equipments">
+        <h1></h1>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo">
+        <img src="logo.png" alt="Your Logo">
+    </div>
+
+    <div class="eqs">
+        <h1>Equipments</h1>
+    </div>
+
+    <div class="container">
+        <!-- Row 1 -->
+        <div class="box">
+            <div class="content">
+                <img src="spoon.png" alt="Spoon">
+                <p>Spoons</p>
+                <p>P5 per piece</p>
+                <p><div class="availability">Availability: <span id="availabilitySpoons">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('spoons')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="spoons" id="quantitySpoons" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('spoons')">+</button>
+                </div>
+            </div>
+        </div>
+		
+		<div class="box">
+            <div class="content">
+                <img src="fork.png" alt="Fork">
+                <p>Forks</p>
+                <p>P5 per piece</p>
+                <p><div class="availability">Availability: <span id="availabilityForks">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('forks')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="forks" id="quantityForks" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('forks')">+</button>
+                </div>
+            </div>
+        </div>
+		
+		<div class="box">
+            <div class="content">
+                <img src="plate.png" alt="Plate">
+                <p>Plates</p>
+                <p>P25 per piece</p>
+                <p><div class="availability">Availability: <span id="availabilityPlates">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('plates')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="plates" id="quantityPlates" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('plates')">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+		<!-- Row 2 -->
+		<div class="container">
+			<div class="box">
+				<div class="content">
+					<img src="table.png" alt="Table">
+					<p>Tables</p>
+					<p>P100 per piece</p>
+					<p><div class="availability">Availability: <span id="availabilityTables">0</span></div></p>
+					<div class="quantity">
+						<button onclick="decrement('tables')">-</button>
+						<input type="number" min="0" value="0" data-equipment="tables" id="quantityTables" oninput="this.value = this.value.replace(/\D/g, '')">
+						<button onclick="increment('tables')">+</button>
+					</div>
+				</div>
+			</div>
+		
+		<div class="box">
+            <div class="content">
+                <img src="chair.png" alt="Chairs">
+                <p>Chairs</p>
+                <p>P30 per piece</p>
+				<p><div class="availability">Availability: <span id="availabilityChairs">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('chairs')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="chairs" id="quantityChairs" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('chairs')">+</button>
+                </div>
+            </div>
+        </div>
+		
+		<div class="box">
+            <div class="content">
+                <img src="tablecloth.png" alt="Table Cloth">
+                <p>Table Cloth</p>
+                <p>P50 per piece</p>
+				<p><div class="availability">Availability: <span id="availabilityTablecloth">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('tablecloth')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="tablecloth" id="quantityTablecloth" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('tablecloth')">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+        <!-- Row 3 -->
+		<div class="container">
+        <div class="box">
+            <div class="content">
+                <img src="bowl.png" alt="Bowl">
+                <p>Bowls</p>
+                <p>P35 per piece</p>
+				<p><div class="availability">Availability: <span id="availabilityBowls">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('bowls')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="bowls" id="quantityBowls" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('bowls')">+</button>
+                </div>
+            </div>
+        </div>
+		
+		<div class="box">
+            <div class="content">
+                <img src="food warmer.png" alt="Food Warmer">
+                <p>Food Warmers</p>
+                <p>P150 per piece</p>
+				<p><div class="availability">Availability: <span id="availabilityFoodwarmers">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('foodwarmers')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="foodwarmers" id="quantityFoodwarmers" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('foodwarmers')">+</button>
+                </div>
+            </div>
+        </div>
+		
+		<div class="box">
+            <div class="content">
+                <img src="glass.png" alt="Glass">
+                <p>Glasses</p>
+                <p>P30 per piece</p>
+				<p><div class="availability">Availability: <span id="availabilityGlasses">0</span></div></p>
+                <div class="quantity">
+                    <button onclick="decrement('glasses')">-</button>
+                    <input type="number" min="0" value="0" data-equipment="glasses" id="quantityGlasses" oninput="this.value = this.value.replace(/\D/g, '')">
+                    <button onclick="increment('glasses')">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+	
+    <button class="cancel-button" onclick="cancelBooking()">Cancel</button>
+	<button class="submit-button" onclick="saveBookingAndEquipments()">Submit</button>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script>
+        // Initialize Firebase
+        var firebaseConfig = {
+		apiKey: "AIzaSyD9v0VqL47MtnVXUt39iaJIsxm1aAIp38g",
+		authDomain: "supershy-database.firebaseapp.com",
+		databaseURL: "https://supershy-database-default-rtdb.firebaseio.com",
+		projectId: "supershy-database",
+		storageBucket: "supershy-database.appspot.com",
+		messagingSenderId: "54112195310",
+		appId: "1:54112195310:web:d24469d3050522482619ff",
+		measurementId: "G-7FKTCLNJDX"
+        };
+        firebase.initializeApp(firebaseConfig);
+		
+		// Function to check if user is logged in
+		firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				// User is signed in.
+				console.log('User is logged in:', user.uid);
+				// You can proceed with your code here
+			} else {
+				// User is not signed in.
+				console.log('User is not logged in');
+				// Redirect to login page
+				window.location.href = 'login.html';
+			}
+		});
+		
+		// Function to fetch availability data from Firebase and update counters
+        document.addEventListener('DOMContentLoaded', function () {
+            const equipmentKeys = ['spoons', 'forks', 'plates', 'tables', 'chairs', 'tablecloth', 'bowls', 'foodwarmers', 'glasses'];
+
+            equipmentKeys.forEach(equipmentKey => {
+                var availabilityRef = firebase.database().ref('equipments/' + equipmentKey + '/availability');
+                availabilityRef.once('value', function (snapshot) {
+                    var availability = snapshot.val();
+                    updateAvailability(equipmentKey, availability);
+                    // Set max value for input fields
+                    setInputMax(equipmentKey, availability);
+                });
+            });
+        });
+
+        function updateAvailability(equipmentKey, availability) {
+            var availabilitySpan = document.getElementById('availability' + equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1));
+            if (availabilitySpan) {
+                availabilitySpan.textContent = availability;
+            }
+        }
+
+        function setInputMax(equipmentKey, availability) {
+            var input = document.querySelector('input[data-equipment="' + equipmentKey + '"]');
+            if (input) {
+                input.setAttribute('max', availability);
+            }
+        }
+
+        // Function to update quantity
+        document.addEventListener('input', function (event) {
+            var input = event.target;
+            if (input.tagName === 'INPUT' && input.getAttribute('type') === 'number') {
+                var equipmentKey = input.getAttribute('data-equipment');
+                var availabilitySpan = document.getElementById('availability' + equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1));
+                var availability = parseInt(availabilitySpan.textContent);
+                var inputValue = parseInt(input.value);
+                if (inputValue < 0) {
+                    input.value = 0;
+                } else if (inputValue > availability) {
+                    input.value = availability;
+                }
+            }
+        });
+
+			// Function to save equipment details under the booking ID
+			function saveEquipmentDetails(bookingID) {
+				var equipmentDetails = {
+					spoons: parseInt(document.getElementById('quantitySpoons').value),
+					forks: parseInt(document.getElementById('quantityForks').value),
+					plates: parseInt(document.getElementById('quantityPlates').value),
+					tables: parseInt(document.getElementById('quantityTables').value),
+					chairs: parseInt(document.getElementById('quantityChairs').value),
+					tablecloth: parseInt(document.getElementById('quantityTablecloth').value),
+					bowls: parseInt(document.getElementById('quantityBowls').value),
+					foodwarmers: parseInt(document.getElementById('quantityFoodwarmers').value),
+					glasses: parseInt(document.getElementById('quantityGlasses').value)
+				};
+
+				// Save equipment details in Firebase under the booking ID
+				firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/booking_details/' + bookingID + '/equipmentDetails').set(equipmentDetails)
+					.then(function () {
+						console.log('Equipment details saved under booking ID:', bookingID);
+						// Deduct availability from the equipments node
+						deductAvailabilityFromEquipments(equipmentDetails)
+							.then(function() {
+								// Redirect to the next page after saving equipment details and deducting availability
+								window.location.href = 'receipt.html';
+							})
+							.catch(function(error) {
+								console.error('Error deducting availability:', error);
+							});
+					})
+					.catch(function (error) {
+						console.error('Error saving equipment details:', error);
+					});
+			}
+
+			// Function to deduct availability from the equipments node
+			function deductAvailabilityFromEquipments(equipmentDetails) {
+				var promises = [];
+				for (var equipment in equipmentDetails) {
+					var quantity = equipmentDetails[equipment];
+					if (quantity > 0) {
+						var availabilityRef = firebase.database().ref('equipments/' + equipment + '/availability');
+						var updatedAvailability = firebase.database.ServerValue.increment(-quantity);
+						var promise = availabilityRef.set(updatedAvailability)
+							.then(function() {
+								console.log('Availability for ' + equipment + ' deducted successfully!');
+							})
+							.catch(function(error) {
+								console.error('Error deducting availability for ' + equipment + ':', error);
+							});
+						promises.push(promise);
+					}
+				}
+				return Promise.all(promises);
+			}
+
+
+
+			// Function to retrieve booking ID from the session storage
+			function getBookingID() {
+				return sessionStorage.getItem('bookingID');
+			}
+
+			// Function to save booking and equipment details
+			function saveBookingAndEquipments() {
+				var bookingID = getBookingID();
+				if (!bookingID) {
+					console.error('No booking ID found in the session.');
+					return;
+				}
+
+				saveEquipmentDetails(bookingID);
+			}
+		
+		// Function to delete booking details from Firebase
+		function deleteBookingDetails(bookingID) {
+			var userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/booking_details/' + bookingID);
+			userRef.once('value', function(snapshot) {
+				var booking = snapshot.val();
+				var dateOfEvent = booking.dateOfEvent;
+
+				// Splitting date to get year, month, and day
+				var dateParts = dateOfEvent.split('-');
+				var year = dateParts[0];
+				var month = dateParts[1];
+				var day = parseInt(dateParts[2]); // Convert day to integer
+
+				// Remove leading zero if day is less than 10
+				if (day < 10) {
+					day = day.toString(); // Convert back to string
+				}
+
+				var dateRef = firebase.database().ref('Dates/' + year + '/' + month + '/' + day);
+				dateRef.once('value', function(dateSnapshot) {
+					// Check if the booking date exists
+					if (dateSnapshot.exists()) {
+						// Delete the booking date
+						dateRef.remove()
+							.then(function() {
+								console.log('Booking date removed:', dateOfEvent);
+							})
+							.catch(function(error) {
+								console.error('Error removing booking date:', error);
+							});
+					}
+				});
+
+				// Decrement or delete the corresponding weekCounter
+				var weekRef = firebase.database().ref('WeekCounters/' + year + '/week_' + getWeekNumber(new Date(dateOfEvent)));
+				weekRef.transaction(function(currentCount) {
+					if (currentCount <= 1) {
+						// Delete the weekCounter if it's 1
+						return null;
+					} else {
+						// Decrement the weekCounter
+						return (currentCount || 0) - 1;
+					}
+				});
+
+				// Delete the booking details
+				userRef.remove()
+					.then(function() {
+						console.log('Booking details deleted for booking ID:', bookingID);
+						// After deleting, redirect to the dashboard or any other appropriate page
+						window.location.href = 'dashboard.html';
+					})
+					.catch(function(error) {
+						console.error('Error deleting booking details:', error);
+					});
+			});
+		}
+
+		// Function to get the ISO week number for a date
+		function getWeekNumber(date) {
+			var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+			var dayNum = d.getUTCDay() || 7;
+			d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+			var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+			return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+		}
+
+		// Function to cancel the booking
+		function cancelBooking() {
+			var bookingID = getBookingID();
+			if (!bookingID) {
+				console.error('No booking ID found in the session.');
+				return;
+			}
+			deleteBookingDetails(bookingID);
+		}
+
+		
+        // Function to increment quantity
+        function increment(equipmentKey) {
+            var input = document.getElementById('quantity' + equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1));
+            var availability = parseInt(document.getElementById('availability' + equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1)).textContent);
+            var inputValue = parseInt(input.value);
+            if (inputValue < availability) {
+                input.value = inputValue + 1;
+            }
+        }
+
+        // Function to decrement quantity
+        function decrement(equipmentKey) {
+            var input = document.getElementById('quantity' + equipmentKey.charAt(0).toUpperCase() + equipmentKey.slice(1));
+            var inputValue = parseInt(input.value);
+            if (inputValue > 0) {
+                input.value = inputValue - 1;
+            }
+        }
+    </script>
+</body>
+
+</html>

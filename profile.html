@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" type="text/css" href="profile.css"> <!-- Link to external CSS file -->
+</head>
+<body>
+<div id="loading-screen">
+    <div id="loading-spinner"></div>
+</div>
+<script>
+    // Set the custom loading time in milliseconds (e.g., 3000 for 3 seconds)
+    var customLoadingTime = 3000;
+
+    // Wait for the page to load
+    window.addEventListener('load', function () {
+        // Show the loading screen
+        var loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.style.display = 'flex'; // Show the loading screen
+
+        // After the custom loading time, hide the loading screen
+        setTimeout(function() {
+            loadingScreen.style.display = 'none'; // Hide the loading screen
+        }, customLoadingTime);
+    });
+</script>
+
+        
+<div class="profile-container">
+    <div class="top-section"></div> <!-- Top section with the background color -->
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo" class="logo">
+    </div>
+    <div class="background-image"></div> <!-- Background image container -->
+    <div class="profile-info">
+        <h2>Profile Information</h2>
+        <div class="profile-details">
+            <div class="logo-upload-container">
+                <input type="file" id="logo-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                <div class="profile-picture-container" onclick="document.getElementById('logo-upload').click()">
+                    <img src="profile_logo.png" alt="Profile Picture" class="profile-picture" id="profile-picture">
+                    <p class="upload-text">Upload</p> <!-- Upload text -->
+                </div>
+            </div>
+		<div class="profile-text">
+			<p id="emailDisplay">Email: </p>
+			<div id="nameContainer" class="editable-container">
+				<p id="nameDisplay">Name: </p>
+				<span class="edit-icon" onclick="editField('name')">✏️</span>
+			</div>
+			<div id="numberContainer" class="editable-container">
+				<p id="numberDisplay">Number: </p>
+				<span class="edit-icon" onclick="editField('number')">✏️</span>
+			</div>
+		</div>
+    </div>
+	        <hr class="divider">
+    <div class="bottom-section">
+        <div class="section">
+            <h3>History</h3>
+            <div id="bookingHistory">
+			<!-- Booking history will be dynamically populated here -->
+        </div>
+    </div>
+	
+	<div id="bookingReceiptModal" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="closeBookingReceiptModal()">&times;</span>
+			<h2>Booking Receipt</h2>
+			<div id="bookingReceiptDetails"></div>
+		</div>
+	</div>
+
+    <a href="dashboard.html" class="back-button">Back</a> <!-- Back button -->
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+<script>
+	// Initialize Firebase
+	var firebaseConfig = {
+		apiKey: "AIzaSyD9v0VqL47MtnVXUt39iaJIsxm1aAIp38g",
+		authDomain: "supershy-database.firebaseapp.com",
+		databaseURL: "https://supershy-database-default-rtdb.firebaseio.com",
+		projectId: "supershy-database",
+		storageBucket: "supershy-database.appspot.com",
+		messagingSenderId: "54112195310",
+		appId: "1:54112195310:web:d24469d3050522482619ff",
+		measurementId: "G-7FKTCLNJDX"
+	};
+	firebase.initializeApp(firebaseConfig);
+
+	// Get the currently logged-in user
+	firebase.auth().onAuthStateChanged(function(user) {
+	  if (user) {
+		// User is signed in.
+		var emailDisplay = document.getElementById("emailDisplay");
+		var nameDisplay = document.getElementById("nameDisplay");
+		var numberDisplay = document.getElementById("numberDisplay");
+		fetchBookingHistory(user.uid);
+
+		emailDisplay.innerText = "Email: " + user.email;
+
+		// Fetch additional user details from the database
+		var database = firebase.database();
+		var userRef = database.ref('users/' + user.uid);
+		userRef.once('value', function(snapshot) {
+		  var userData = snapshot.val();
+		  if (userData) {
+			nameDisplay.innerText = "Name: " + userData.fullname;
+			numberDisplay.innerText = "Number: " + userData.phnum;
+			var profilePictureUrl = userData.profilePictureUrl;
+
+			// Conditionally show or hide the profile picture element
+			var profilePicture = document.getElementById("profile-picture");
+			if (profilePictureUrl) {
+			  profilePicture.onload = function() {
+				profilePicture.style.display = "block"; // Show the image after it's loaded
+			  };
+			  profilePicture.src = profilePictureUrl;
+			} else {
+			  profilePicture.src = 'profile_logo.png'; // Set profile logo
+			  profilePicture.style.display = "block"; // Show profile logo
+			}
+		  } else {
+			console.log("User data not found in the database.");
+		  }
+		});
+	  } else {
+		// No user is signed in.
+		console.log("No user is signed in.");
+		// Redirect to login page
+		window.location.href = "login.html";
+	  }
+	});
+	
+	function validateContactNumber(contactNumber) {
+		// Regular expression to match Philippines phone number format
+		var regex = /^(09|\+639)\d{9}$/;
+
+		// Check if the contact number matches the regex pattern
+		return regex.test(contactNumber);
+	}
+	
+	function editField(fieldType) {
+		var containerId = fieldType === 'name' ? 'nameContainer' : 'numberContainer';
+		var container = document.getElementById(containerId);
+		var fieldValue = container.querySelector('p');
+		var currentValue = fieldValue.innerText.split(': ')[1]; // Get the current value part after ': '
+		var newValue = prompt("Enter new " + fieldType + ":", currentValue);
+		if (newValue !== null && newValue.trim() !== '') {
+			if (fieldType === 'number') {
+				// Validate the new contact number
+				if (!validateContactNumber(newValue)) {
+					alert("Invalid contact number. A valid phone number consists of 11 digits and starts with '09' or '+639'. Example: 09123456789 or +639123456789");
+					return;
+				}
+			}
+			// Update the value in the database if needed
+			var user = firebase.auth().currentUser;
+			var database = firebase.database();
+			var userRef = database.ref('users/' + user.uid);
+			var updateData = {};
+			updateData[fieldType === 'name' ? 'fullname' : 'phnum'] = newValue;
+			userRef.update(updateData)
+				.then(function() {
+					console.log(fieldType + ' updated successfully!');
+					// Update the displayed value
+					fieldValue.innerText = fieldType.charAt(0).toUpperCase() + fieldType.slice(1) + ": " + newValue;
+				})
+				.catch(function(error) {
+					console.error('Error updating ' + fieldType + ':', error);
+				});
+		}
+	}
+
+	function fetchBookingHistory(userID) {
+		var historyDiv = document.getElementById('bookingHistory');
+		var userRef = firebase.database().ref('users/' + userID + '/booking_details');
+		userRef.once('value', function(snapshot) {
+			var bookings = snapshot.val();
+			if (bookings) {
+				var historyHTML = '';
+				var index = 1; // Initialize index for numbering
+				for (var bookingID in bookings) {
+					var dateOfEvent = bookings[bookingID].dateOfEvent;
+					// Format dateOfEvent to match MM-DD-YY format
+					var formattedDate = formatDate(dateOfEvent);
+					// Construct the booking ID with the specified format
+					var bookingLabel = 'Booking ' + index + ' ' + formattedDate;
+					historyHTML += '<p><a href="#" onclick="showBookingDetails(\'' + userID + '\', \'' + bookingID + '\')">' + bookingLabel + '</a></p>';
+					index++; // Increment index for the next booking
+				}
+				historyDiv.innerHTML = historyHTML;
+			} else {
+				console.log('No booking history found for user:', userID);
+				historyDiv.innerHTML = '<p>No booking history found.</p>';
+			}
+		}).catch(function(error) {
+			console.error('Error fetching booking history:', error);
+			historyDiv.innerHTML = '<p>Error fetching booking history.</p>';
+		});
+	}
+
+		function formatDate(dateString) {
+			var dateParts = dateString.split('-');
+			if (dateParts.length === 3 && dateParts[0].length === 4 && dateParts[1].length === 2 && dateParts[2].length === 2) {
+				// Check if all parts of the date are present and have correct lengths
+				var year = dateParts[0].substring(2, 4); // Take last two digits of the year
+				var month = dateParts[1];
+				var day = dateParts[2];
+				return month + '-' + day + '-' + year;
+			} else {
+				console.error('Invalid date format:', dateString);
+				return dateString; // Return the original string if it's not properly formatted
+			}
+		}
+
+
+
+	// Function to fetch equipment details
+	function fetchEquipmentDetails(equipment, quantity) {
+		return Promise.all([
+			firebase.database().ref('equipments/' + equipment + '/name').once('value'),
+			firebase.database().ref('equipments/' + equipment + '/price').once('value')
+		]).then(function(snapshots) {
+			var name = snapshots[0].val();
+			var price = snapshots[1].val();
+			return { name, price, quantity, subtotal: quantity * price };
+		});
+	}
+
+	function showBookingDetails(userID, bookingID) {
+		var bookingRef = firebase.database().ref('users/' + userID + '/booking_details/' + bookingID);
+		bookingRef.once('value', function(snapshot) {
+			var bookingDetails = snapshot.val();
+			if (bookingDetails) {
+				var orderDetailsHTML = '<div class="order-summary"><h2>Order Summary</h2><div class="order-details">';
+				orderDetailsHTML += '<p><strong>Name:</strong> ' + bookingDetails.name + '</p>';
+				orderDetailsHTML += '<p><strong>Date of Event:</strong> ' + bookingDetails.dateOfEvent + '</p>';
+				orderDetailsHTML += '<p><strong>Place of Event:</strong> ' + bookingDetails.placeOfEvent + '</p>';
+				orderDetailsHTML += '<p><strong>Contact Number:</strong> ' + bookingDetails.contactNumber + '</p>';
+				orderDetailsHTML += '<div class="equipment-list"><ul>';
+
+				var promises = [];
+				for (var equipment in bookingDetails.equipmentDetails) {
+					var quantity = bookingDetails.equipmentDetails[equipment];
+					if (quantity > 0) {
+						promises.push(fetchEquipmentDetails(equipment, quantity));
+					}
+				}
+
+				Promise.all(promises).then(function(equipmentDataList) {
+					equipmentDataList.forEach(function(equipmentData) {
+						var { name, price, quantity, subtotal } = equipmentData;
+						orderDetailsHTML += '<li><strong>Item:</strong> ' + name + '<br><strong>Quantity:</strong> ' + quantity + '<br><strong>Price:</strong> ₱' + price.toLocaleString() + '<br><strong class="subtotal-label">Subtotal:</strong> ₱' + subtotal.toLocaleString() + '</li>';
+					});
+
+					orderDetailsHTML += '</ul></div>';
+					const serviceFee = 50;
+					var total = serviceFee;
+					equipmentDataList.forEach(function(equipmentData) {
+						total += equipmentData.subtotal;
+					});
+
+					orderDetailsHTML += '<div class="divider"></div><p><strong>Service Fee:</strong> <span>₱' + serviceFee.toLocaleString() + '</span></p>';
+					orderDetailsHTML += '<div class="divider"></div><p class="total"><strong>Total:</strong> <span>₱' + total.toLocaleString() + '</span></p>';
+					orderDetailsHTML += '</div></div>';
+
+					// Pass bookingID to displayModal function
+					displayModal(orderDetailsHTML, bookingID);
+				}).catch(function(error) {
+					console.error('Error fetching equipment details:', error);
+				});
+			} else {
+				console.log('Booking details not found for booking ID:', bookingID);
+			}
+		}).catch(function(error) {
+			console.error('Error fetching booking details:', error);
+		});
+	}
+
+	function displayModal(content, bookingID) {
+		var modal = document.createElement('div');
+		modal.className = 'modal';
+
+		var cancelButton = '<button class="cancel-button" onclick="cancelBooking(\'' + bookingID + '\')">Cancel</button>';
+
+		modal.innerHTML = '<div class="modal-content">' + content + cancelButton + '<span class="close">&times;</span></div>';
+
+		document.body.appendChild(modal);
+		modal.style.display = 'block';
+
+		var closeBtn = modal.querySelector('.close');
+
+		closeBtn.onclick = function() {
+			modal.style.display = 'none';
+			document.body.removeChild(modal);
+		};
+
+		window.onclick = function(event) {
+			if (event.target === modal) {
+				modal.style.display = 'none';
+				document.body.removeChild(modal);
+			}
+		};
+	}
+
+
+
+
+	// Function to show the booking receipt modal
+	function showBookingReceiptModal() {
+		var bookingReceiptModal = document.getElementById('bookingReceiptModal');
+		bookingReceiptModal.style.display = 'block';
+	}
+
+	// Function to close the booking receipt modal
+	function closeBookingReceiptModal() {
+		var bookingReceiptModal = document.getElementById('bookingReceiptModal');
+		bookingReceiptModal.style.display = 'none';
+	}
+	
+	
+	function incrementAvailabilityForEquipments(equipmentDetails) {
+		var promises = [];
+		for (var equipment in equipmentDetails) {
+			var quantity = equipmentDetails[equipment];
+			if (quantity > 0) {
+				var availabilityRef = firebase.database().ref('equipments/' + equipment + '/availability');
+				var updatedAvailability = firebase.database.ServerValue.increment(quantity); // Increment availability
+				var promise = availabilityRef.set(updatedAvailability)
+					.then(function() {
+						console.log('Availability for ' + equipment + ' incremented successfully!');
+					})
+					.catch(function(error) {
+						console.error('Error incrementing availability for ' + equipment + ':', error);
+					});
+				promises.push(promise);
+			}
+		}
+		return Promise.all(promises);
+	}
+
+
+	function deleteBookingDetails(bookingID) {
+		console.log("Deleting booking details for booking ID:", bookingID);
+		var userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/booking_details/' + bookingID);
+		userRef.once('value', function(snapshot) {
+			var booking = snapshot.val();
+			var dateOfEvent = booking.dateOfEvent;
+			console.log("Date of event:", dateOfEvent);
+
+			// Retrieve equipment details from the booking
+			var equipmentDetails = booking.equipmentDetails;
+			console.log("Equipment details:", equipmentDetails);
+
+			// Increment equipment quantities back in the database
+			incrementAvailabilityForEquipments(equipmentDetails);
+
+			// Splitting date to get year, month, and day
+			var dateParts = dateOfEvent.split('-');
+			var year = dateParts[0];
+			var month = dateParts[1];
+			var day = parseInt(dateParts[2]); // Convert day to integer
+			console.log("Year:", year, "Month:", month, "Day:", day);
+
+			// Remove leading zero if day is less than 10
+			if (day < 10) {
+				day = day.toString(); // Convert back to string
+			}
+
+			var dateRef = firebase.database().ref('Dates/' + year + '/' + month + '/' + day);
+			dateRef.once('value', function(dateSnapshot) {
+				// Check if the booking date exists
+				if (dateSnapshot.exists()) {
+					// Delete the booking date
+					dateRef.remove()
+						.then(function() {
+							console.log('Booking date removed:', dateOfEvent);
+						})
+						.catch(function(error) {
+							console.error('Error removing booking date:', error);
+						});
+				}
+			});
+
+			// Decrement or delete the corresponding weekCounter
+			var weekRef = firebase.database().ref('WeekCounters/' + year + '/week_' + getWeekNumber(new Date(dateOfEvent)));
+			weekRef.transaction(function(currentCount) {
+				if (currentCount <= 1) {
+					// Delete the weekCounter if it's 1
+					return null;
+				} else {
+					// Decrement the weekCounter
+					return (currentCount || 0) - 1;
+				}
+			});
+
+			// Delete the booking details
+			userRef.remove()
+				.then(function() {
+					console.log('Booking details deleted for booking ID:', bookingID);
+					window.location.reload();
+				})
+				.catch(function(error) {
+					console.error('Error deleting booking details:', error);
+				});
+		});
+	}
+
+
+
+
+		// Function to get the ISO week number for a date
+		function getWeekNumber(date) {
+			var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+			var dayNum = d.getUTCDay() || 7;
+			d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+			var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+			return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+		}
+
+		// Function to cancel the booking
+		function cancelBooking(bookingID) {
+			if (!bookingID) {
+				console.error('No booking ID found.');
+				return;
+			}
+			deleteBookingDetails(bookingID);
+		}
+
+
+		
+		
+
+	// Function to handle file upload
+	function handleFileUpload(event) {
+		var file = event.target.files[0];
+		if (file) {
+			var user = firebase.auth().currentUser;
+			var storageRef = firebase.storage().ref('profile_pictures/' + user.uid);
+			var uploadTask = storageRef.put(file);
+			uploadTask.on('state_changed', 
+				null, // No need to track upload progress
+				function(error) {
+					// Handle unsuccessful uploads
+					console.error('Error uploading profile picture:', error);
+				}, 
+				function() {
+					// Handle successful uploads on complete
+					uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+						console.log('File available at', downloadURL);
+						// Save the download URL to the database
+						var database = firebase.database();
+						var userRef = database.ref('users/' + user.uid);
+						userRef.update({
+							profilePictureUrl: downloadURL
+						});
+						// Update the profile picture display
+						var profilePicture = document.getElementById("profile-picture");
+						profilePicture.onload = function() {
+							profilePicture.style.display = "block"; // Show the image after it's loaded
+						};
+						profilePicture.src = downloadURL;
+					});
+				}
+			);
+		}
+	}
+</script>
+
+</body>
+</html>

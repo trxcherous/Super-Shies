@@ -1,0 +1,291 @@
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: #f5f5dc;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    overflow: hidden;
+}
+
+    /*header tab*/
+.uppertab {
+    width: 100%;
+    overflow-x: hidden;
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #a67b5b;
+}
+
+.logo {
+    flex: 0 0 auto;
+    margin-left: 20px; 
+}
+
+.tabs {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; 
+}
+
+.uppertab a {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+}
+
+.uppertab a:hover {
+    background-color: #B9AFA1;
+}
+
+.uppertab img {
+    margin-right: 5px;
+}
+
+.uppertab p {
+    font-style: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 35px;
+    font-weight: bold;
+    color: #3f3128;
+    margin-left: 10px;
+}
+
+@media screen and (max-width: 500px) {
+    .uppertab a {
+      float: none;
+      display: block;
+      text-align: left;
+    }
+    .uppertab-right{
+      float: none;
+    }
+}
+
+    /*pop-up contents*/
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: beige;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 9999;
+}
+
+.popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-height: 80vh;
+    overflow-y: auto; 
+}
+
+.popup-content h2{
+    font-size: 40px;
+    text-align: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: bolder;
+}
+
+.popup-content h3{
+    font-size: 25px;
+    text-align: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.popup-content h4{
+    font-size: 20px;
+    text-align: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: bold;
+}
+
+.popup-content p{
+    font-size: 20px;
+    text-align: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-weight: lighter;
+    margin-bottom: 20px;
+}
+
+.popup button {
+    background-color: beige;
+    color: black;
+    font-weight: bolder;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+    /*blurry background*/
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    backdrop-filter: blur(10px); 
+    z-index: 9998; 
+    display: none; 
+    pointer-events: none; 
+}
+
+    /*sections*/
+.section {
+    float: left;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.left {
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+}
+
+.left h5 {
+    font-size: 100px;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    margin-top: 200px;
+    color: #49392e;
+    font-style: italic;
+}
+
+.left p {
+    font-size: 40px;
+    margin-left: 30px;
+    margin-top: 0; 
+    color: #49392e;
+    font-style: italic;
+}
+
+.right {
+    width: 45%;
+    background-color: #e4bca0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh; 
+}
+
+.container:after {
+    display: table;
+    clear: both;
+}
+
+.welcome {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-top: 70px;
+    margin-left: 30px; 
+    align-self: flex-start; 
+}
+
+h1 {
+    font-size: 75px;
+    text-align: left;
+    margin-left: 30px;
+    color: #4e3e32;
+}
+
+.boxes {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    flex-wrap: wrap; 
+
+}
+
+.profile,
+.box {
+    width: 250px;
+    height: 270px;
+    margin: 50px; 
+    margin-top: 0px;
+    padding: 25px;
+    background-color: #eed9c4;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile img,
+.box img {
+    display: block;
+    width: 200px;
+    height: 200px;
+    margin-bottom: auto;
+}
+
+.profile p,
+.box p {
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+    color: #524134;
+}
+
+.profile:hover,
+.box:hover {
+    background-color: #B9AFA1;
+}
+
+
+
+    /*loading screen*/
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('bg.jpg'); 
+    background-size: cover; 
+    z-index: 9999; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Adjust styles for mobile responsiveness */
+@media screen and (max-width: 768px) {
+    .booking-section {
+        width: 100%;
+        height: auto; 
+        position: relative; 
+        top: auto;
+        right: auto;
+        margin-top: 20px; 
+    }
+}
+
+#loading-spinner {
+    border: 8px solid #f3f3f3; 
+    border-top: 8px solid #3498db; 
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

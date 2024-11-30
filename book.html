@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Booking Details</title>
+   <!-- Add jQuery -->
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <!-- Add jQuery UI -->
+   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+   <!-- Google Maps JavaScript API with Places library -->
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places"></script>
+   <!-- Firebase SDK -->
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+   <style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			font-family: Arial, sans-serif;
+			background: linear-gradient(to bottom, #a67b5b 0%, #a67b5b 10%, #f5f5dc 0%, #f5f5dc 100%);
+		}
+
+		.logo {
+			position: absolute;
+			top: 5px;
+			left: 100px;
+			height: 200px;
+			width: auto;
+		}
+
+		h1 {
+			position: absolute;
+			top: 20px;
+			left: 300px;
+			color: #4e3e32;
+			font-size: 90px;
+			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+		}
+
+       	.booking-details {
+           position: absolute;
+           margin-top: 1px;
+           top: 200px;
+           left: 100px;
+           color: #4e3e32;
+           font-size: 35px;
+           font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+       	}
+
+		.booking-details p {
+			margin-bottom: 0;
+		}
+
+		.input-box {
+			margin-top: 1px;
+			width: 800px;
+			height: 40px;
+			font-size: 20px;
+			background-color: #c2a580;
+			border: none;
+			padding: 5px;
+			border-radius: 8px;
+		}
+
+		.next-button, .back-button {
+			position: absolute;
+			bottom: 50px;
+			background-color: #c2a580;
+			border: none;
+			padding: 10px 20px;
+			color: #030202;
+			font-size: 30px;
+			border-radius: 8px;
+			cursor: pointer;
+		}
+
+		.next-button {
+			right: 50px;
+		}
+
+		.back-button {
+			right: 160px;
+		}
+
+		
+		.booked-date {
+		background-color: lightgray;
+		opacity: 0.5;
+		cursor: not-allowed;
+		}
+
+	</style>
+</head>
+<body>
+	<h1>BOOKING DETAILS</h1>
+	<div class="booking-details">
+		<div class="form-group">
+			<p>Name:</p>
+			<input type="text" id="name" class="input-box" placeholder="Enter Name">
+		</div>
+		<div class="form-group">
+			<p>Contact Number:</p>
+			<input type="text" id="contactNumber" class="input-box" placeholder="Enter Contact Number">
+		</div>
+		<div class="form-group">
+			<p>Date of Event:</p>
+			<input type="text" id="start" name="trip-start" class="input-box" placeholder="Select Date" readonly>
+		</div>
+		<div class="form-group">
+			<p>Place of Event:</p>
+			<input id="pac-input" type="text" class="input-box" placeholder="Enter a location">
+		</div>
+	</div>
+	<button class="back-button" onclick="window.location.href = 'dashboard.html'">Back</button>
+	<button id="nextButton" class="next-button">Next</button>
+	<img src="logo.png" alt="Logo" class="logo">
+
+   <!-- Firebase Configuration and Script -->
+   <script>
+   document.addEventListener('DOMContentLoaded', function() {
+
+		var firebaseConfig = {
+		apiKey: "AIzaSyD9v0VqL47MtnVXUt39iaJIsxm1aAIp38g",
+		authDomain: "supershy-database.firebaseapp.com",
+		databaseURL: "https://supershy-database-default-rtdb.firebaseio.com",
+		projectId: "supershy-database",
+		storageBucket: "supershy-database.appspot.com",
+		messagingSenderId: "54112195310",
+		appId: "1:54112195310:web:d24469d3050522482619ff",
+		measurementId: "G-7FKTCLNJDX"
+		};
+		firebase.initializeApp(firebaseConfig);
+
+		var database = firebase.database();
+
+		// Function to validate contact number
+		function validateContactNumber(contactNumber) {
+			// Regular expression to match Philippines phone number format
+			var regex = /^(09|\+639)\d{9}$/;
+
+			// Check if the contact number matches the regex pattern
+			return regex.test(contactNumber);
+		}
+
+
+		// Function to check if the date is booked
+		function isDateBooked(dateString) {
+			return new Promise((resolve, reject) => {
+				var dateComponents = dateString.split('-');
+				var year = dateComponents[0];
+				var month = dateComponents[1];
+				var day = dateComponents[2];
+				var bookedDatesRef = database.ref('Dates/' + year + '/' + month + '/' + day);
+
+				bookedDatesRef.once('value', function(snapshot) {
+					var isBooked = snapshot.exists();
+					resolve(isBooked);
+				}, function(error) {
+					console.error("Error fetching date information:", error);
+					resolve(false);
+				});
+			});
+		}
+
+		// Initialize datepicker
+		$('#start').datepicker({
+			dateFormat: 'yy-mm-dd',
+			minDate: 0, // Disable past dates
+			beforeShow: function(input, inst) {
+				// Clear previously disabled dates
+				$(this).find('.booked-date').removeClass('booked-date').removeAttr('disabled');
+				
+				// Fetch booked dates from Firebase
+				fetchBookedDates();
+			},
+			onChangeMonthYear: function(year, month, inst) {
+				// Fetch booked dates for the new month
+				fetchBookedDates();
+			}
+		});
+
+	// Function to fetch and disable booked dates
+	function fetchBookedDates() {
+		console.log("Fetching booked dates...");
+		database.ref('Dates').once('value', function(snapshot) {
+			snapshot.forEach(function(yearNode) {
+				var year = yearNode.key;
+				console.log("Year:", year);
+				yearNode.forEach(function(monthNode) {
+					var month = monthNode.key;
+					console.log("Month:", month);
+					monthNode.forEach(function(dayNode) {
+						var day = dayNode.key;
+						console.log("Day:", day);
+						var dateString = year + '-' + month + '-' + day;
+
+						// Check if the date is booked
+						isDateBooked(dateString).then(function(isBooked) {
+							console.log("Date:", dateString, "Is Booked:", isBooked);
+							if (isBooked) {
+								// Disable the booked date in the datepicker
+								var formattedDate = $.datepicker.formatDate('yy-mm-dd', new Date(year, month - 1, day));
+								var datePicker = $('#start').datepicker('widget');
+								datePicker.find('.ui-datepicker-calendar').find('a').each(function() {
+									if ($(this).text() === day && $(this).closest('td').data('month') == month - 1) {
+										$(this).addClass('booked-date').attr('disabled', true);
+										console.log("Date", dateString, "disabled in the datepicker.");
+									}
+								});
+							}
+						});
+					});
+				});
+			});
+		});
+	}
+
+	// Function to get the ISO week number for a date
+	Date.prototype.getWeekNumber = function() {
+		var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+		var dayNum = d.getUTCDay() || 7;
+		d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+		var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+		return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+	};
+	
+	// Function to fetch user's account information
+    function fetchUserData() {
+        var user = firebase.auth().currentUser;
+        if (user) {
+            var userRef = database.ref('users/' + user.uid);
+            userRef.once('value', function(snapshot) {
+                var userData = snapshot.val();
+                if (userData) {
+                    // Populate input fields with user data
+                    document.getElementById('name').value = userData.fullname || '';
+                    document.getElementById('contactNumber').value = userData.phnum || '';
+                    document.getElementById('pac-input').value = userData.address || '';
+                } else {
+                    console.log("No data found for the user.");
+                }
+            }, function(error) {
+                console.error("Error fetching user data:", error);
+            });
+        } else {
+            console.log("No user is currently logged in.");
+        }
+    }
+
+	firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            fetchUserData();
+        } else {
+			window.location.href = "login.html";
+        }
+    });
+
+
+	// Function to save booking details
+	function saveBookingDetails() {
+		var name = document.getElementById('name').value;
+		var contactNumber = document.getElementById('contactNumber').value;
+		var dateOfEvent = document.getElementById('start').value;
+		var placeOfEvent = document.getElementById('pac-input').value;
+
+		// Check if any field is empty
+		if (!name || !contactNumber || !dateOfEvent || !placeOfEvent) {
+			alert("Please fill in all fields before proceeding.");
+			return; // Prevent saving if any field is empty
+		}
+		
+		if (!validateContactNumber(contactNumber)) {
+			alert("Invalid contact number. A valid phone number consists of 11 digits and starts with '09' or '+639'. Example: 09123456789 or +639123456789");
+			return; // Prevent saving if contact number is invalid
+		}
+
+		// Get the currently logged-in user
+		var user = firebase.auth().currentUser;
+		
+		// Check if a user is logged in
+		if (user) {
+			var selectedDate = new Date(dateOfEvent);
+			var selectedYear = selectedDate.getFullYear();
+			var selectedWeek = selectedDate.getWeekNumber();
+			var weekRef = database.ref('WeekCounters/' + selectedYear + '/week_' + selectedWeek); // Week counter reference
+			
+			// Begin a transaction to increment the booking count for the week
+			weekRef.transaction(function(currentCount) {
+				// If currentCount is null, it means no booking exists for the week yet
+				// If currentCount is less than 2, increment the count by 1
+				if (currentCount === null || currentCount < 2) {
+					return (currentCount || 0) + 1;
+				} else {
+					// If the limit of 2 bookings per week is reached, abort the transaction
+					console.log("Maximum limit of bookings for this week reached.");
+					return; // Returning undefined aborts the transaction
+				}
+			}, function(error, committed, snapshot) {
+				if (error) {
+					console.error("Transaction failed abnormally!", error);
+					alert("Failed to save booking details. Please try again later.");
+				} else if (!committed) {
+					console.log("Maximum limit of bookings for this week reached.");
+					alert("Sorry, the maximum limit of bookings for this week has been reached. Please choose another week.");
+				} else {
+					// Save booking details to the database
+					var userRef = database.ref('users/' + user.uid + '/booking_details');
+					var dateRef = database.ref('Dates');
+
+					var timestamp = firebase.database.ServerValue.TIMESTAMP;
+					var newBookingRef = userRef.push();
+					var bookingID = newBookingRef.key; // Get the booking ID
+
+					newBookingRef.set({
+						name: name,
+						contactNumber: contactNumber,
+						dateOfEvent: dateOfEvent,
+						placeOfEvent: placeOfEvent,
+						timestamp: timestamp
+					}, function(error) {
+						if (error) {
+							console.error("Error saving booking details:", error);
+							alert("Failed to save booking details. Please try again later.");
+						} else {
+							console.log("Booking details saved successfully!");
+							sessionStorage.setItem('bookingID', bookingID); // Store the booking ID in session storage
+
+							// Splitting date to get year, month, and day
+							var dateParts = dateOfEvent.split('-');
+							var year = dateParts[0];
+							var month = dateParts[1];
+							var day = parseInt(dateParts[2]); // Convert day to integer
+
+							// Remove leading zero if day is less than 10
+							if (day < 10) {
+								day = day.toString(); // Convert back to string
+							}
+
+							// Check if the date node exists, if not, create it
+							var dateNodeRef = dateRef.child(year).child(month).child(day);
+							dateNodeRef.once("value", function(snapshot) {
+								if (!snapshot.exists()) {
+									dateNodeRef.set(true); // Create the date node if it doesn't exist
+								}
+							});
+
+							// Save the booking ID under the appropriate date
+							dateNodeRef.push().set(bookingID);
+
+							window.location.href = "equipments.html"; // Redirect to equipments.html
+						}
+					});
+							if (snapshot.val() === 0 || snapshot.val() === 1) {
+							console.log("Week counter is 0 or 1, resetting equipment availability.");
+							resetEquipmentAvailability(); // Call the function to reset equipment availability
+						}
+				}
+			});
+		} else {
+			console.log("No user is logged in.");
+			alert("No user is logged in. Please log in first.");
+		}
+	}
+
+		function resetEquipmentAvailability() {
+		// Get a reference to the equipment nodes
+		var equipmentRef = database.ref('equipments');
+
+		return new Promise((resolve, reject) => {
+			equipmentRef.once('value', function(snapshot) {
+				var updates = {}; // Object to store all updates
+
+				snapshot.forEach(function(childSnapshot) {
+					// Construct the update object with equipment name as key and availability as value
+					updates[childSnapshot.key + '/availability'] = 100;
+				});
+
+				// Update all equipment availability at once
+				equipmentRef.update(updates)
+					.then(function() {
+						resolve(); // Resolve the promise when all updates are complete
+					})
+					.catch(function(error) {
+						console.error("Error updating equipment availability:", error);
+						reject(error); // Reject the promise if any update fails
+					});
+			});
+		});
+	}
+
+       // Add event listener to the Next button
+       var nextButton = document.getElementById('nextButton');
+       if (nextButton) {
+           nextButton.addEventListener('click', function(event) {
+               event.preventDefault(); // Prevent default form submission behavior
+               saveBookingDetails(); // Call the saveBookingDetails function
+           });
+       }
+
+       // Google Places Autocomplete
+       var input = document.getElementById('pac-input');
+       var autocomplete = new google.maps.places.Autocomplete(input);
+	   });
+   </script>
+</body>
+</html>

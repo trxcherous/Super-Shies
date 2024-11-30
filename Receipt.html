@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Order Summary</title>
+   <link rel="stylesheet" type="text/css" href="Receipt.css"> <!-- Link to external CSS file -->
+   
+
+</head>
+<body>
+   <div class="top-section"></div> <!-- Top section with the background color -->
+   <div class="logo-container">
+       <img src="logo.png" alt="Logo" class="logo">
+   </div>
+   <div class="background-image"></div> <!-- Background image container -->
+   <div class="order-summary">
+       <h2>Order Summary</h2>
+       <div class="order-details" id="orderDetails">
+           <!-- Order details will be dynamically populated here -->
+       </div>
+   </div>
+   <div class="buttons-container">
+       <button class="dashboard-button" onclick="window.location.href = 'dashboard.html'">Dashboard</button>
+       <button class="download-button">Download</button>
+       <button class="logout-button" onclick="logout()">Log Out</button>
+   </div>
+   <!-- Firebase Configuration and Script -->
+   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+</script>
+   <script>
+		// Initialize Firebase
+		var firebaseConfig = {
+		apiKey: "AIzaSyD9v0VqL47MtnVXUt39iaJIsxm1aAIp38g",
+		authDomain: "supershy-database.firebaseapp.com",
+		databaseURL: "https://supershy-database-default-rtdb.firebaseio.com",
+		projectId: "supershy-database",
+		storageBucket: "supershy-database.appspot.com",
+		messagingSenderId: "54112195310",
+		appId: "1:54112195310:web:d24469d3050522482619ff",
+		measurementId: "G-7FKTCLNJDX"
+		};
+		firebase.initializeApp(firebaseConfig);
+		
+		// Function to check if user is logged in
+		firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				// User is signed in.
+				console.log('User is logged in:', user.uid);
+				// You can proceed with your code here
+			} else {
+				// User is not signed in.
+				console.log('User is not logged in');
+				// Redirect to login page
+				window.location.href = 'login.html';
+			}
+		});
+
+		function fetchBookingDetails() {
+		  var bookingID = sessionStorage.getItem('bookingID');
+		  console.log('Booking ID retrieved from session storage:', bookingID); // Log booking ID for verification
+		  var user = firebase.auth().currentUser;
+		  if (user && bookingID) {
+			var userID = user.uid;
+			var bookingRef = firebase.database().ref('users/' + userID + '/booking_details/' + bookingID);
+			bookingRef.once('value', function(snapshot) {
+			  var bookingDetails = snapshot.val();
+			  if (bookingDetails) {
+				var orderDetailsHTML = '';
+				orderDetailsHTML += '<p><strong>Name:</strong> ' + bookingDetails.name + '</p>';
+				orderDetailsHTML += '<p><strong>Date of Event:</strong> ' + bookingDetails.dateOfEvent + '</p>';
+				orderDetailsHTML += '<p><strong>Place of Event:</strong> ' + bookingDetails.placeOfEvent + '</p>';
+				orderDetailsHTML += '<p><strong>Contact Number:</strong> ' + bookingDetails.contactNumber + '</p>';
+				// Equipment details section
+				orderDetailsHTML += '<div class="equipment-list"><ul>';
+
+				var promises = []; // Array to store promises for fetching equipment details
+
+				for (var equipment in bookingDetails.equipmentDetails) {
+				  var quantity = bookingDetails.equipmentDetails[equipment];
+				  if (quantity > 0) {
+					promises.push(fetchEquipmentDetails(equipment, quantity)); // Add promise to the array
+				  }
+				}
+
+				Promise.all(promises).then(function(equipmentDataList) {
+    // All equipment details fetched, now build the HTML
+    let total = 0;
+    orderDetailsHTML += '<div class="equipment-list"><ul>';
+    equipmentDataList.forEach(function(equipmentData) {
+        var { name, price, quantity, subtotal } = equipmentData;
+        // Format the output
+        orderDetailsHTML += '<li class="item">' +
+            '<strong>Item:</strong> ' + name + '<br>' +
+            '<strong>Quantity:</strong> ' + quantity + '<br>' +
+            '<strong>Price:</strong> ₱' + price.toLocaleString() + '<br>' +
+            '<strong class="subtotal-label">Subtotal:</strong> ₱' + subtotal.toLocaleString() + '</li>';
+        total += subtotal; // Add subtotal to total for each equipment
+    });
+    orderDetailsHTML += '</ul></div>';
+    
+    // Add service fee and total
+    const serviceFee = 50; // Assuming service fee is a fixed value
+    total += serviceFee;
+	
+	bookingRef.update({ totalPrice: total })
+                        .then(function() {
+                            console.log('Total price updated successfully:', total);
+                        })
+                        .catch(function(error) {
+                            console.error('Error updating total price:', error);
+                        });
+						
+    orderDetailsHTML += '<div class="divider"></div>';
+    orderDetailsHTML += '<p><strong>Service Fee:</strong> <span>₱' + serviceFee.toLocaleString() + '</span></p>';
+    orderDetailsHTML += '<div class="divider"></div>';
+    orderDetailsHTML += '<p class="total"><strong>Total:</strong> <span>₱' + total.toLocaleString() + '</span></p>';
+
+    document.getElementById('orderDetails').innerHTML = orderDetailsHTML; // Update HTML with all details
+}).catch(function(error) {
+    // Handle any errors fetching equipment details
+    console.error('Error fetching equipment details:', error);
+});
+
+			  } else {
+				console.log('Equipment details not found for booking ID:', bookingID);
+			  }
+			}).catch(function(error) {
+			  // ... (error handling for fetching bookingDetails)
+			});
+		  } else {
+			console.log('No user logged in or no booking ID found in session storage.');
+		  }
+		}
+
+
+		function fetchEquipmentDetails(equipment, quantity) {
+		  return Promise.all([
+			firebase.database().ref('equipments/' + equipment + '/name').once('value'),
+			firebase.database().ref('equipments/' + equipment + '/price').once('value')
+		  ]).then(function(snapshots) {
+			var name = snapshots[0].val();
+			var price = snapshots[1].val();
+			return { name, price, quantity, subtotal: quantity * price };
+		  });
+		}
+		
+		function logout() {
+        firebase.auth().signOut().then(function() {
+            window.location.href = "login.html"; // Redirect to login page after logout
+        }).catch(function(error) {
+            console.error(error);
+        });
+    }
+		
+		// Firebase authentication state observer
+		firebase.auth().onAuthStateChanged(function(user) {
+			if (user) {
+				// User is signed in.
+				console.log('User is logged in:', user.uid);
+				fetchBookingDetails(); // Call the function to fetch booking details when the user is logged in
+			} else {
+				// No user is signed in.
+				console.log('No user is logged in.');
+			}
+		});
+		document.querySelector('.download-button').addEventListener('click', function() {
+    html2canvas(document.querySelector('.order-summary'), {
+        onrendered: function(canvas) {
+            var link = document.createElement('a');
+            link.download = 'order_summary.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    });
+});
+   </script>
+</body>
+</html>

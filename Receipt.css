@@ -1,0 +1,207 @@
+body {
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    z-index: -1; /* This will move the background image to the very back */
+}
+.top-section {
+    position: fixed; /* Change position to fixed */
+    top: 0;
+    left: 0;
+    right: 0; /* Adjusted to cover the entire width */
+    height: 100px; /* Adjust height as needed */
+    background-color: #a67b5b; /* Second color */
+    z-index: 1; /* Increase z-index to overlay other content */
+}
+
+
+.logo-container {
+    position: relative;
+    width: 160px; /* Increased width for the logo container */
+    height: 160px; /* Increased height for the logo container */
+    margin: 0 auto;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.logo {
+    max-width: 100%; /* Ensure the logo fits inside the container */
+    max-height: 100%; /* Ensure the logo fits inside the container */
+}
+.order-summary {
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    width: 1200px; /* Adjusted width */
+    height: auto; /* Set height to auto to accommodate content */
+    background-color: #ffffff;
+    border: 2px solid #a67b5b;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.order-summary h2 {
+    text-align: center;
+    color: #a67b5b;
+    margin-bottom: 20px; /* Increased margin for spacing */
+    font-size: 32px;
+}
+
+.order-details {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    flex-grow: 1; /* This allows the order details to expand to fill available space */
+}
+
+.order-details p {
+    margin: 5px 0;
+    color: #333333;
+    font-size: 28px;
+    line-height: 1.5;
+}
+
+.equipment-list {
+    margin-top: 20px;
+    padding-left: 20px;
+}
+
+.equipment-list ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.equipment-list li {
+    margin: 5px 0;
+    font-size: 26px;
+    line-height: 1.2;
+}
+
+.equipment-list span {
+    float: right;
+}
+
+.total {
+    margin-top: 20px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 30px; /* Adjusted font size */
+}
+
+.total span {
+    color: #a67b5b; /* Total color */
+}
+
+.divider {
+    border-top: 1px dashed #ccc;
+    margin: 20px 0;
+}
+
+.buttons-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.dashboard-button,
+.download-button,
+.logout-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dashboard-button {
+    background-color: #a67b5b; /* Green */
+    color: white;
+}
+
+.download-button {
+    background-color: #a67b5b; /* Blue */
+    color: white;
+}
+
+.logout-button {
+    background-color: #a67b5b; /* Red */
+    color: white;
+}
+.item {
+    margin-bottom: 10px;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.quantity, .price, .subtotal {
+    float: right; /* Align to the right */
+}
+
+.subtotal-label {
+    margin-right: 10px; /* Add some space between subtotal label and value */
+}
+.order-summary {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.order-summary h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.order-details {
+    margin-top: 20px;
+}
+
+.item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: bold;
+}
+
+.quantity, .price, .subtotal {
+    float: right;
+    font-weight: bold;
+}
+
+.subtotal-label {
+    margin-right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

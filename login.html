@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<div class="signup-container">
+    <div class="top-section"></div> <!-- Top section with the background color -->
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo" class="logo">
+    </div>
+    <form id="login-form">
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+			<i class="toggle-password1 fas fa-eye-slash" id="togglePassword"></i>
+        </div>
+        <button id="loginButton">Login</button>
+    </form>
+    <div id="login-error-message"></div>
+    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
+	<!-- Add a link for forgot password -->
+	<p>Forgot your password? <a href="#" id="forgotPasswordLink">Reset it here</a></p>
+
+	<!-- Forgot password modal -->
+	<div id="forgotPasswordModal" class="modal">
+	  <div class="modal-content">
+		<span class="close">&times;</span>
+		<h2>Forgot Password</h2>
+		<div class="input-group">
+		  <input type="email" id="forgotPasswordEmail" placeholder="Enter your email" required>
+		  <button id="sendResetEmailButton">Send Reset Email</button>
+		</div>
+		<div id="forgotPasswordErrorMessage" class="error-message"></div>
+	  </div>
+	</div>
+</div>
+
+	<span id="countdownTimer"></span>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <!-- Our script must be loaded after firebase references -->
+    <script src="index.js"></script>
+</body>
+</html>

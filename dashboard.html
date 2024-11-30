@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <div id="loading-spinner"></div>
+    </div>
+
+    <script>
+        // Set the custom loading time in milliseconds (e.g., 3000 for 3 seconds)
+        var customLoadingTime = 3000;
+    
+        // Wait for the page to load
+        window.addEventListener('load', function () {
+            // Show the loading screen
+            var loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.display = 'flex'; 
+    
+            // After the custom loading time, hide the loading screen
+            setTimeout(function() {
+                loadingScreen.style.display = 'none'; 
+            }, customLoadingTime);
+        });
+    </script>
+
+    <div class="uppertab"> 
+        <div class="logo">
+            <img src="logo.png" alt="Logo" style="width: 170px; height:170px;">
+        </div>
+        <div class="tabs">
+            <a href="#" onclick="openPopup('termsPopup')">
+                <img src="terms-and-conditions.png" alt="terms" style="width: 50px; height:50px; margin: auto;">
+                <p>Terms & Conditions</p>
+            </a>
+            <a href="#" onclick="openPopup('aboutPopup')">
+                <img src="about-us.png" alt="about us" style="width: 50px; height:50px; margin: auto;">
+                <p>About Us</p>
+            </a>
+            <a href="#" class="icon-link" onclick="logout();">
+                <img src="close.png" alt="logout" style="width: 50px; height:50px; margin: auto;">
+                <p>Logout</p>
+            </a>
+        </div>
+    </div>
+
+    <div id="backdrop" class="backdrop"></div>
+
+    <div id="termsPopup" class="popup">
+        <div class="popup-content">
+            <h2>Terms & Conditions</h2>
+            <h3>1. Agreement to Terms</h3>
+            <p>By accessing or using our catering equipment rental service website, you agree to be bound by these Terms and Conditions. If you disagree with any part of these terms, you may not access the website or use our services.</p>
+            <h3>2. Rental Terms</h3>
+            <h4>2.1. Booking: </h4>
+            <p>All bookings are subject to availability and a maximum of two(2) bookings per week will be enforced.</p>
+            <h4>2.2. Payment:</h4>
+            <p>Rental fees must be paid in full prior to the event date, and payments will be made outside of the website.</p>
+            <h4>2.3. Cancellation: </h4>
+            <p>Cancellation of booking should be made a day before the event.</p>
+            <h4>2.4. Damages: </h4>
+            <p>The customer is responsible for any damages or loss incurred during the rental period.</p>
+            <h3>3. Use of Services</h3>
+            <h4>3.1. Purpose: </h4>
+            <p>Our catering equipment rental services are provided for legitimate events and purposes only.</p>
+            <h4>3.2. Accuracy of Information: </h4>
+            <p>Customers are responsible for providing accurate and up-to-date information for booking purposes.</p>
+            <h3>4. Liability</h3> 
+            <h4>4.1. Limitation of Liability: </h4>
+            <p>We shall not be liable for any direct, indirect, incidental, special, or consequential damages arising out of or relating to the use or inability to use our services. </p>
+            <h4>4.2. Indemnification: </h4>
+            <p>Customers agree to indemnify and hold us harmless from any claims, damages, or losses arising out of their use of our services.</p>
+            <h3>5. Privacy Policy</h3>
+            <h4>5.1. Data Collection: </h4>
+            <p>We collect personal information for the purpose of providing our services and will handle it confidentially. </p>
+            <h3>6. Changes to Terms</h3>
+            <p>We reserve the right to modify or replace these Terms and Conditions at any time. Your continued use of the website after any such changes constitutes acceptance of the new Terms and Conditions.</p>
+            <button onclick="closePopup('termsPopup')">Close</button>
+        </div>
+    </div>
+
+    <div id="aboutPopup" class="popup">
+        <div class="popup-content">
+            <h2>About Us</h2>
+            <h3>Welcome to SS Catering Services! </h3>
+            <p> </p>
+            <p>We're your premier source for premium catering equipment for any event. We provide top-notch service and a variety of rental equipments to make your event the best. From elegant tableware to kitchen equipment, we have everything you need to ensure your event is a success.</p>
+            <p> </p>
+            <p>Thank you for considering us for your rental needs - we look forward to serving you!</p>
+            <p> </p>
+            <h3>Contact Us:</h3>
+            <p>Phone No: 0923758119895</p>
+            <p>Email: ssrental@gmail.com</p>
+            <p> </p>
+            <button onclick="closePopup('aboutPopup')">Close</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section left">
+            <h5>Your Event, Our Expertise</h5>
+            <p>Hassle-free Booking, Only Here!</p>
+        </div>
+        <div class="section right">
+            <div class="welcome">
+                <h1 id="welcomeMessage">Welcome!</h1>
+            </div>
+            <div class="boxes">
+                <div class="profile" onclick="navigateTo('profile.html')">
+                    <img src="user.png" alt="Profile">
+                    <p>Profile</p>
+                </div>
+                <div class="box" onclick="navigateTo('book.html')">
+                    <img src="catering.png" alt="Book">
+                    <p>Book</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="index.js"></script>
+    <script>
+    function navigateTo(url) {
+        window.location.href = url;
+    }
+
+    // Firebase configuration
+    var firebaseConfig = {
+		apiKey: "AIzaSyD9v0VqL47MtnVXUt39iaJIsxm1aAIp38g",
+		authDomain: "supershy-database.firebaseapp.com",
+		databaseURL: "https://supershy-database-default-rtdb.firebaseio.com",
+		projectId: "supershy-database",
+		storageBucket: "supershy-database.appspot.com",
+		messagingSenderId: "54112195310",
+		appId: "1:54112195310:web:d24469d3050522482619ff",
+		measurementId: "G-7FKTCLNJDX"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Check if user is logged in
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            console.log("User is logged in:", user);
+            // Fetch additional user data from the database
+            var database = firebase.database();
+            var userRef = database.ref('users/' + user.uid);
+            userRef.once('value', function(snapshot) {
+                var userData = snapshot.val();
+                if (userData) {
+                    var fullName = userData.fullname;
+                    console.log("User's full name:", fullName);
+                    document.getElementById("welcomeMessage").innerHTML = "Welcome, " + fullName + "!";
+                } else {
+                    console.log("User data not found");
+                    document.getElementById("welcomeMessage").innerHTML = "Welcome, User!";
+                }
+            });
+        } else {
+            console.log("No user is logged in.");
+            window.location.href = "login.html"; // Redirect to login page if not logged in
+        }
+    });
+
+    function openPopup(popupId) {
+        var backdrop = document.getElementById('backdrop');
+        var popup = document.getElementById(popupId);
+        backdrop.style.display = "block";
+        popup.style.display = "block";
+    }
+
+    // Function to close pop-up
+    function closePopup(popupId) {
+        var popup = document.getElementById(popupId);
+        var backdrop = document.getElementById('backdrop');
+        backdrop.style.display = "none";
+        popup.style.display = "none";
+    }
+
+    function logout() {
+        firebase.auth().signOut().then(function() {
+            window.location.href = "login.html"; // Redirect to login page after logout
+        }).catch(function(error) {
+            console.error(error);
+        });
+    }
+    </script>
+</body>
+</html>
